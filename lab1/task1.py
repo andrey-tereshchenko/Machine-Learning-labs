@@ -32,10 +32,10 @@ def grad(k, b):
 
 
 k0, b0 = 0, 0
-learning_rate = 1e-1
+learning_rate = 0.9
 
 k, b = k0, b0
-for _ in range(500):
+for _ in range(100):
     # print("k:" + str(k) + " b:" + str(b))
     print("J:" + str(J(k, b)))
     grad_k, grad_b = grad(k, b)
