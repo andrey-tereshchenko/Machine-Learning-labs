@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-df = pd.read_csv('data/1.csv')
+df = pd.read_csv('data/3.csv')
 x, y = df['x'].values, df['y'].values
 
 

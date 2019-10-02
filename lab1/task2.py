@@ -18,7 +18,7 @@ def difference_array(array_1, array_2, learning_rate):
     return difference
 
 
-def cost_fuction(theta):
+def cost_function(theta):
     m = len(x)
     param = (1 / (2 * m))
     sum = 0
@@ -52,18 +52,17 @@ learning_rate = 3e-3
 theta = theta_initial
 
 for _ in range(400):
-    print("J:" + str(cost_fuction(theta)))
+    print("J:" + str(cost_function(theta)))
     grads = grad(theta)
     theta = difference_array(theta, grads, learning_rate)
 
-print(theta)
+print('theta: ' + str(theta))
 
 
 def points_for_graph(theta):
     x = [i for i in np.arange(-5, 5, 0.1)]
     y = [h(theta, x[i]) for i in range(len(x))]
     return x, y
-
 
 x1, y1 = points_for_graph(theta)
 plt.scatter(x, y, marker='.')
