@@ -45,7 +45,7 @@ theta_initial = np.array(10 * [1])
 learning_rate = 8e-4
 theta = theta_initial
 
-for _ in range(200):
+for _ in range(300):
     print("J:" + str(cost_function(x1, x2, y, theta)))
     grads = np.array(grad(theta))
     theta = theta - learning_rate * grads
