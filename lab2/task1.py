@@ -59,7 +59,6 @@ theta = theta0
 alpha = 2
 iteration = 100
 theta = gradient_decent(theta.T[0], x, y.T[0], alpha, iteration)
-
 x_plot = np.linspace(0, 1)
 y_plot = h(theta, get_features(x_plot))
 
