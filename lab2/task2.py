@@ -20,12 +20,13 @@ def get_features(x1, x2):
 
 
 def transform_y_for_one_vs_all(y, iter):
+    transform_y = []
     for i in range(len(y)):
         if y[i] == iter:
-            y[i] = 1
+            transform_y.append(1)
         else:
-            y[i] = 0
-    return y
+            transform_y.append(0)
+    return transform_y
 
 
 def accuracy(y_pred, y_true):
@@ -39,7 +40,6 @@ def sigmoid(x):
 
 
 def h(theta, x):
-    # theta_transpose = np.transpose(theta)
     z = np.matmul(x, theta)
     return sigmoid(z)
 
@@ -47,10 +47,12 @@ def h(theta, x):
 def cost_function(y, theta, x):
     ones = np.array(len(y) * [1])
     y = np.transpose(y)
+    b = np.transpose(h(theta, x))
     a = np.transpose(ones - h(theta, x))
     a[a == 0] = 0.01
-    sum = np.matmul(-y, np.log(np.transpose(h(theta, x)))) - np.matmul((ones - y),
-                                                                       np.log(a))
+    b[b == 0] = 0.01
+    sum = np.matmul(-y, np.log(b)) - np.matmul((ones - y),
+                                               np.log(a))
     return sum
 
 
@@ -67,26 +69,51 @@ def gradient_decent(theta, x, y, alpha, iteration):
     return theta
 
 
-# def predict(theta, x1, x2):
-#     return h(theta, x1, x2).argmax(axis=1)
+def get_coordinate_for_plot(x1, x2, y):
+    x1_plot = []
+    x2_plot = []
+    for i in range(len(y)):
+        if y[i] == 1:
+            x1_plot.append(x1[i])
+            x2_plot.append(x2[i])
+    return x1_plot, x2_plot
+
+
+def one_vs_all(theta_0, theta_1, theta_2, x):
+    h_matrix = np.array([h(theta_0, x), h(theta_1, x), h(theta_2, x)])
+    print(h_matrix.shape)
+    print(h_matrix)
+    y_predict = np.argmax(h_matrix, axis=0)
+    return y_predict
+
+
+
 
 
 x = get_features(x1_train, x2_train)
-theta0 = np.zeros(shape=(64, 1))
-theta = theta0
-y_1 = np.array(transform_y_for_one_vs_all(y_train, 0))
-y_1 = np.reshape(y_1, newshape=(500, 1))
+theta = np.zeros(shape=(64, 1))
+y_0 = np.reshape(np.array(transform_y_for_one_vs_all(y_train, 0)), newshape=(500, 1))
+y_1 = np.reshape(np.array(transform_y_for_one_vs_all(y_train, 1)), newshape=(500, 1))
+y_2 = np.reshape(np.array(transform_y_for_one_vs_all(y_train, 2)), newshape=(500, 1))
 alpha = 1e-20
 iteration = 100
-theta = gradient_decent(theta.T[0], x, y_1.T[0], alpha, iteration)
-# z = np.matmul(x, theta.T[0])
-# a = np.array([float(bigfloat.exp(i)) for i in z])
-# print(a)
+theta_0 = gradient_decent(theta.T[0], x, y_0.T[0], alpha, iteration)
+theta_1 = gradient_decent(theta.T[0], x, y_1.T[0], alpha, iteration)
+theta_2 = gradient_decent(theta.T[0], x, y_2.T[0], 1e-19, 291)
 
-# plt.figure(figsize=(6, 6))
-# plt.scatter(x1_train, x2_train, c=y_train, marker='.')
-# plt.show()
-#
-# df = pd.read_csv('data/2_test.csv')
-# x1_test, x2_test, y_test = [df[k].values for k in ['x1', 'x2', 'y']]
-# print('Final accuracy: %.2f' % (accuracy(predict(theta, x1_test, x2_test), y_test) * 100) + '%')
+
+df = pd.read_csv('data/2_test.csv')
+x1_test, x2_test, y_test = [df[k].values for k in ['x1', 'x2', 'y']]
+x_test = get_features(x1_test, x2_test)
+test_result = one_vs_all(theta_0, theta_1, theta_2, x_test)
+
+print(y_train)
+yy = h(theta_2, x)
+yy[yy > 0.5] = 1
+yy[yy <= 0.5] = 0
+x1_plot, x2_plot = get_coordinate_for_plot(x1_train, x2_train, yy)
+plt.figure(figsize=(6, 6))
+plt.scatter(x1_train, x2_train, c=y_train, marker='.')
+plt.plot(x1_plot, x2_plot, c='red')
+plt.show()
+print('Final accuracy: %.2f' % (accuracy(test_result, y_test) * 100) + '%')
