@@ -62,37 +62,34 @@ def silhouette_score(x, centroids, points_by_clusters):
 
 
 def kmeans(x, k):
-    min_s = 10000000
-    better_centroids = np.array([])
-    better_points_by_clusters = []
-    for _ in range(1):
-        centroid_indexes = np.random.choice(x.shape[0], k)
-        centroids = np.array([x[i] for i in centroid_indexes])
+    centroid_indexes = np.random.randint(x.shape[0], size=k)
+    centroids = x[centroid_indexes, :]
+    points_by_clusters = separate_points_by_clusters(x, centroids, k)
+    for _ in range(6):
+        centroids = get_new_centroids(x, points_by_clusters, centroids)
         points_by_clusters = separate_points_by_clusters(x, centroids, k)
-        s = silhouette_score(x, centroids, points_by_clusters)
-        for _ in range(7):
-            centroids = get_new_centroids(x, points_by_clusters, centroids)
-            points_by_clusters = separate_points_by_clusters(x, centroids, k)
-            s = silhouette_score(x, centroids, points_by_clusters)
-        if s < min_s:
-            min_s = s
-            better_centroids = centroids
-            better_points_by_clusters = points_by_clusters
-        print(s)
-    return better_centroids, better_points_by_clusters, min_s
+    s = silhouette_score(x, centroids, points_by_clusters)
+    return centroids, points_by_clusters, s
 
 
 start_k = 2
-end_k = 100
+end_k = 150
 
 silhouette_scores = []
 k_list = []
 for k in range(start_k, end_k):
-    res = kmeans(x, k)
-
-    silhouette_res = res[2]
+    s_min = 10
+    res_better = []
+    for i in range(1):
+        res = kmeans(x, k)
+        if s_min > res[2]:
+            s_min = res[2]
+            res_better = res
+    print(k)
+    silhouette_res = s_min
     k_list.append(k)
     silhouette_scores.append(silhouette_res)
 
 plt.plot(k_list, silhouette_scores)
 plt.show()
+print('Optimal k: ' + str(np.argmax(np.array(silhouette_scores))))
