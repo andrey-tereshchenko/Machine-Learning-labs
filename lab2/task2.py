@@ -89,6 +89,8 @@ def get_coordinate_for_plot(x1, x2, y):
 
 def one_vs_all(theta_0, theta_1, theta_2, x):
     h_matrix = np.array([h(theta_0, x), h(theta_1, x), h(theta_2, x)])
+    print("h: " + str(h(theta_0, x).shape))
+    print(h_matrix.shape)
     y_predict = np.argmax(h_matrix, axis=0)
     return y_predict
 
@@ -112,10 +114,13 @@ x_test = normalize(x_test)
 train_result = one_vs_all(theta_0, theta_1, theta_2, x)
 test_result = one_vs_all(theta_0, theta_1, theta_2, x_test)
 
-# x1_plot, x2_plot = get_coordinate_for_plot(x1_train, x2_train, result)
-# plt.figure(figsize=(6, 6))
-# plt.scatter(x1_train, x2_train, c=y_train, marker='.')
-# plt.plot(x1_plot, x2_plot, c='red')
-# plt.show()
+result_2 = h(theta_2, x)
+result_2[result_2 >= 0.5] = 1
+result_2[result_2 < 0.5] = 0
+x1_plot, x2_plot = get_coordinate_for_plot(x1_train, x2_train, result_2)
+plt.figure(figsize=(6, 6))
+plt.scatter(x1_train, x2_train, c=y_train, marker='.')
+plt.plot(x1_plot, x2_plot, c='red')
+plt.show()
 print('Train accuracy: %.2f' % (accuracy(train_result, y_train) * 100) + '%')
 print('Final accuracy: %.2f' % (accuracy(test_result, y_test) * 100) + '%')

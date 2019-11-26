@@ -7,6 +7,8 @@ matrix = np.array([[1, 2, 3, 5],
 min = np.min(matrix, axis=0)
 max = np.max(matrix, axis=0)
 difference = max - min
-print(max)
-print(min)
-print(difference)
+
+a1 = np.array([1, 2, 3, 4])
+a2 = np.array([1, 2, 3, 4])
+print(np.sum(a1* a2))
+
